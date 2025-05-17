@@ -63,6 +63,7 @@ exports.getFlashcards = async (req, res) => {
     } 
     // Nếu không, sử dụng Supabase
     else {
+      // Khởi tạo truy vấn cơ bản
       let queryBuilder = supabase.from(TABLE_NAME).select('*');
       
       // Filter by level if provided
@@ -70,17 +71,28 @@ exports.getFlashcards = async (req, res) => {
         queryBuilder = queryBuilder.eq('level', parseInt(level));
       }
       
-      // Search by word or meaning if provided 
+      // Search by word or meaning if provided
       if (query) {
+        // Sử dụng cú pháp .or() đúng theo tài liệu Supabase
         queryBuilder = queryBuilder.or(`word.ilike.%${query}%,meaning.ilike.%${query}%`);
       }
       
-      // Execute query with Supabase
+      // Thực hiện truy vấn và lấy kết quả
       const { data, error } = await queryBuilder;
+      
+      // Log chi tiết truy vấn và kết quả để debug
+      console.log('Supabase query details:', {
+        url: supabase.supabaseUrl,
+        hasAnonKey: !!supabase.supabaseKey,
+        table: TABLE_NAME,
+        filters: { level, query },
+        error: error ? { code: error.code, message: error.message } : null,
+        resultCount: data ? data.length : 0
+      });
       
       if (error) throw error;
       
-      return res.status(200).json(data);
+      return res.status(200).json(data || []);
     }
   } catch (error) {
     console.error('Error details:', error);

@@ -22,7 +22,15 @@ router.get('/health', async (req, res) => {
   const status = {
     prisma: { status: 'not_used', message: 'Prisma không được cấu hình' },
     supabase: { status: 'not_checked', message: 'Chưa kiểm tra Supabase' },
-    overall: { status: 'ok', message: 'Ít nhất một phương thức kết nối hoạt động' }
+    overall: { status: 'ok', message: 'Ít nhất một phương thức kết nối hoạt động' },
+    environment: {
+      NODE_ENV: process.env.NODE_ENV,
+      DATABASE_URL_SET: !!process.env.DATABASE_URL,
+      SUPABASE_URL_SET: !!process.env.SUPABASE_URL, 
+      SUPABASE_KEY_SET: !!process.env.SUPABASE_ANON_KEY,
+      SUPABASE_URL_PREFIX: process.env.SUPABASE_URL ? process.env.SUPABASE_URL.substring(0, 15) + '...' : 'undefined',
+      TABLE_NAME: TABLE_NAME
+    }
   };
 
   // Kiểm tra kết nối Prisma
@@ -49,6 +57,24 @@ router.get('/health', async (req, res) => {
     if (error) throw error;
     
     status.supabase = { status: 'ok', message: 'Supabase kết nối thành công' };
+    
+    // Thêm kiểm tra số lượng bản ghi
+    const { data: records, error: countError } = await supabase
+      .from(TABLE_NAME)
+      .select('*');
+      
+    if (countError) {
+      status.supabase.records = { 
+        status: 'error', 
+        message: 'Không thể đếm bản ghi', 
+        error: countError.message 
+      };
+    } else {
+      status.supabase.records = { 
+        count: records ? records.length : 0,
+        sample: records && records.length > 0 ? records[0] : null
+      };
+    }
   } catch (error) {
     console.error('Supabase health check failed:', error);
     status.supabase = { 

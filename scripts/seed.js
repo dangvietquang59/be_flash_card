@@ -79,17 +79,32 @@ async function seedDatabase() {
       }
     }
     
-    // Thêm dữ liệu mẫu
-    const { data, error } = await supabase
+    // Kiểm tra dữ liệu hiện có
+    const { data: existingData, error: checkError } = await supabase
       .from(TABLE_NAME)
-      .upsert(sampleData, { onConflict: 'word' });
+      .select('word');
     
-    if (error) {
-      console.error('Lỗi khi thêm dữ liệu:', error);
+    if (checkError) {
+      console.error('Lỗi khi kiểm tra dữ liệu hiện có:', checkError);
       return;
     }
     
-    console.log('✅ Đã thêm dữ liệu mẫu thành công!');
+    // Nếu bảng đã có dữ liệu, không thêm nữa
+    if (existingData && existingData.length > 0) {
+      console.log(`Bảng đã có ${existingData.length} bản ghi. Không cần thêm dữ liệu mẫu.`);
+    } else {
+      // Thêm dữ liệu mẫu vì bảng đang trống
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .insert(sampleData);
+      
+      if (error) {
+        console.error('Lỗi khi thêm dữ liệu:', error);
+        return;
+      }
+      
+      console.log('✅ Đã thêm dữ liệu mẫu thành công!');
+    }
     
     // Kiểm tra dữ liệu đã thêm
     const { data: records, error: selectError } = await supabase
