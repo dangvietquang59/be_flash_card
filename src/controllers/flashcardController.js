@@ -21,6 +21,9 @@ exports.getFlashcards = async (req, res) => {
       ];
     }
     
+    // Log the query conditions for debugging
+    console.log('Query conditions:', JSON.stringify(where));
+    
     // Execute query with conditions
     const flashcards = await prisma.flashcards.findMany({
       where
@@ -28,8 +31,12 @@ exports.getFlashcards = async (req, res) => {
     
     res.status(200).json(flashcards);
   } catch (error) {
-    console.error('Error fetching flashcards:', error);
-    res.status(500).json({ error: 'Error fetching flashcards' });
+    console.error('Error details:', error);
+    res.status(500).json({ 
+      error: 'Error fetching flashcards', 
+      details: error.message, 
+      code: error.code 
+    });
   }
 };
 
@@ -50,7 +57,11 @@ exports.getFlashcardById = async (req, res) => {
     
     res.status(200).json(flashcard);
   } catch (error) {
-    console.error('Error fetching flashcard:', error);
-    res.status(500).json({ error: 'Error fetching flashcard' });
+    console.error('Error details:', error);
+    res.status(500).json({ 
+      error: 'Error fetching flashcard', 
+      details: error.message, 
+      code: error.code 
+    });
   }
 }; 
