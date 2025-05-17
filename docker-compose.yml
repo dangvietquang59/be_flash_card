@@ -7,5 +7,8 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
       - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL}
     restart: unless-stopped 
