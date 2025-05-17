@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model flashcards {
+  stt             Int     @id @default(autoincrement())
+  word            String
+  pinyin          String
+  meaning         String
+  example_chinese String?
+  example_pinyin  String?
+  example_meaning String?
+  level           Int
+} 
