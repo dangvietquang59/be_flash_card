@@ -45,9 +45,10 @@ Create a `.env` file in the root directory with the following variables:
 
 ```
 PORT=3000
-DATABASE_URL="postgresql://postgres.kggqkbxjkknqfgrfagwn:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://postgres.kggqkbxjkknqfgrfagwn:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.kggqkbxjkknqfgrfagwn.supabase.co:5432/postgres"
 ```
+
+Lưu ý quan trọng: Đảm bảo mã hóa URL bất kỳ ký tự đặc biệt nào trong mật khẩu (ví dụ, @ thành %40).
 
 4. **Setup Database and Prisma**
 
